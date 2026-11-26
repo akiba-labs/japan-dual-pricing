@@ -2,7 +2,8 @@
 
 Free checker of **Japan's dual pricing**: resident vs non-resident admission prices at Japanese tourist sites. Pick places, say where you live, get what you pay, the cheapest local price, the difference, planned prices, proof rules and official sources.
 
-- Live: https://japan-dual-pricing.vercel.app
+- Full app and API (Vercel): https://japan-dual-pricing.vercel.app
+- Checker (GitHub Pages): https://akiba-labs.github.io/japan-dual-pricing/
 - API: `GET/POST /api/check`, `GET /api/rules`
 - Agent docs: `/llms.txt`, `/openapi.json`, `/.well-known/ai-plugin.json`
 - MCP tool: `japan_dual_pricing_check` on https://free-agent-tools.vercel.app/mcp
@@ -30,4 +31,9 @@ Sources: Japan Tourism Agency study group page and case list PDF (2026-07-14), p
 npm install
 npm test        # node:test via tsx
 npm run build
+npm run build:pages
 ```
+
+`npm run build` is the Vercel app (checker, JSON API, share pages). `npm run build:pages` writes a static `out/` for GitHub Pages and checks that internal links and assets resolve under `/japan-dual-pricing`. Server routes stay in the repo; the Pages script only moves them aside for that build.
+
+GitHub settings: **Settings → Pages → Build and deployment → Source: GitHub Actions**. Pushes to `main` deploy with `.github/workflows/pages.yml`. The copy-paste steps for the other tool repos are at the top of `scripts/build-pages.mjs`.

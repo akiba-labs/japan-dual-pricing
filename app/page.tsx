@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Calculator } from "@/components/calculator";
 import { FaqSection, type FaqItem } from "@/components/faq-section";
 import { DATA_AS_OF, PLACES, STATUS_LABEL } from "@/lib/dual";
+import { API_PAUSED_NOTE, isGithubPages, pagesSiteUrl, withBasePath } from "@/lib/hosting";
 import type { Place, Tier } from "@/lib/places";
 import { PUBLIC_URL, yen } from "@/lib/share";
 
@@ -37,7 +38,7 @@ const webAppLd = {
   "@type": "WebApplication",
   name: "Japan Dual Pricing Check",
   alternateName: ["Japan dual pricing tracker", "Japan tourist price checker", "二重価格 チェッカー", "Japan foreigner price list"],
-  url: PUBLIC_URL,
+  url: isGithubPages ? pagesSiteUrl(PUBLIC_URL) : PUBLIC_URL,
   applicationCategory: "TravelApplication",
   operatingSystem: "Any",
   isAccessibleForFree: true,
@@ -94,7 +95,9 @@ const faq: FaqItem[] = [
   },
   {
     q: "Is there a free API for Japan dual pricing?",
-    a: `Yes. Free, no key, CORS open: GET ${PUBLIC_URL}/api/check?places=himeji-castle,odawara-castle,nanzoin&residence=overseas returns what you pay at each place, the cheapest resident price, the difference, planned prices, proof rules and sources. All data at ${PUBLIC_URL}/api/rules, OpenAPI at ${PUBLIC_URL}/openapi.json, and the japan_dual_pricing_check tool on https://free-agent-tools.vercel.app/mcp.`,
+    a: isGithubPages
+      ? API_PAUSED_NOTE
+      : `Yes. Free, no key, CORS open: GET ${PUBLIC_URL}/api/check?places=himeji-castle,odawara-castle,nanzoin&residence=overseas returns what you pay at each place, the cheapest resident price, the difference, planned prices, proof rules and sources. All data at ${PUBLIC_URL}/api/rules, OpenAPI at ${PUBLIC_URL}/openapi.json, and the japan_dual_pricing_check tool on https://free-agent-tools.vercel.app/mcp.`,
   },
   {
     q: "二重価格を導入している観光施設は？",
@@ -177,28 +180,46 @@ export default function HomePage() {
           <a className="underline underline-offset-2 hover:text-foreground" href="https://www.mlit.go.jp/kankocho/page08_00012.html" target="_blank" rel="noopener noreferrer">
             Japan Tourism Agency study group on tourist-site pricing
           </a>{" "}
-          (case list PDF, 2026-07-14) plus each facility&apos;s or city&apos;s official page, linked per place in the checker and in{" "}
-          <a className="underline underline-offset-2 hover:text-foreground" href="/api/rules">
-            /api/rules
-          </a>
-          .
+          (case list PDF, 2026-07-14) plus each facility&apos;s or city&apos;s official page, linked per place in the checker
+          {isGithubPages ? (
+            <>. {API_PAUSED_NOTE}</>
+          ) : (
+            <>
+              {" "}
+              and in{" "}
+              <a className="underline underline-offset-2 hover:text-foreground" href="/api/rules">
+                /api/rules
+              </a>
+              .
+            </>
+          )}
         </p>
       </section>
 
       <section className="mt-12 max-w-3xl rounded-3xl border border-line bg-panel/40 p-5 sm:p-6">
         <h2 className="text-lg font-semibold text-foreground">For AI agents and developers</h2>
-        <p className="mt-2 text-sm text-muted">
-          Keyless JSON, CORS open, GET or POST:{" "}
-          <a className="font-mono text-foreground underline underline-offset-2" href="/api/check?places=himeji-castle,odawara-castle,nanzoin&residence=overseas">
-            /api/check?places=himeji-castle,odawara-castle,nanzoin&amp;residence=overseas
-          </a>
-          . All places: <a className="font-mono text-foreground underline underline-offset-2" href="/api/rules">/api/rules</a>. Docs: <a className="underline underline-offset-2" href="/openapi.json">OpenAPI</a>,{" "}
-          <a className="underline underline-offset-2" href="/llms.txt">llms.txt</a>, MCP tool <span className="font-mono text-foreground">japan_dual_pricing_check</span> on{" "}
-          <a className="underline underline-offset-2" href="https://free-agent-tools.vercel.app" target="_blank" rel="noopener noreferrer">
-            free-agent-tools
-          </a>
-          .
-        </p>
+        {isGithubPages ? (
+          <p className="mt-2 text-sm text-muted">
+            {API_PAUSED_NOTE}{" "}
+            <a className="underline underline-offset-2" href={withBasePath("/llms.txt")}>
+              llms.txt
+            </a>{" "}
+            describes the checker and the API contract.
+          </p>
+        ) : (
+          <p className="mt-2 text-sm text-muted">
+            Keyless JSON, CORS open, GET or POST:{" "}
+            <a className="font-mono text-foreground underline underline-offset-2" href="/api/check?places=himeji-castle,odawara-castle,nanzoin&residence=overseas">
+              /api/check?places=himeji-castle,odawara-castle,nanzoin&amp;residence=overseas
+            </a>
+            . All places: <a className="font-mono text-foreground underline underline-offset-2" href="/api/rules">/api/rules</a>. Docs: <a className="underline underline-offset-2" href="/openapi.json">OpenAPI</a>,{" "}
+            <a className="underline underline-offset-2" href="/llms.txt">llms.txt</a>, MCP tool <span className="font-mono text-foreground">japan_dual_pricing_check</span> on{" "}
+            <a className="underline underline-offset-2" href="https://free-agent-tools.vercel.app" target="_blank" rel="noopener noreferrer">
+              free-agent-tools
+            </a>
+            .
+          </p>
+        )}
       </section>
 
       <FaqSection items={faq} heading="Japan dual pricing questions" />
