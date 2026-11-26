@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CardDisclaimer } from "@/components/card-disclaimer";
 import { ShareBar } from "@/components/share-bar";
 import { PLACES, PREFECTURES, STATUS_LABEL, checkDualPricing, type Residence } from "@/lib/dual";
+import { isGithubPages, pagesSiteUrl } from "@/lib/hosting";
 import { EXAMPLE_SHARED, PUBLIC_URL, fmtDate, resultPath, toCheckInput, yen, type Shared } from "@/lib/share";
 
 const field = "mt-2 w-full rounded-xl border border-line bg-black/40 px-3 py-2 text-sm text-foreground focus:border-amber";
@@ -45,7 +46,7 @@ export function Calculator({ initial }: { initial?: Shared }) {
       return null;
     }
   })();
-  const shareUrl = `${PUBLIC_URL}${resultPath(shared)}`;
+  const shareUrl = isGithubPages ? `${pagesSiteUrl(PUBLIC_URL)}/` : `${PUBLIC_URL}${resultPath(shared)}`;
   const toggle = (id: string) => setPlaces((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
 
   return (
@@ -180,6 +181,9 @@ export function Calculator({ initial }: { initial?: Shared }) {
               </ul>
               <p className="mt-4 text-xs text-muted">{result.summary.basisNote}</p>
               <div className="mt-5">
+                {isGithubPages ? (
+                  <p className="mb-3 text-xs text-muted">Share the checker. A link to this exact result returns when hosting is back.</p>
+                ) : null}
                 <ShareBar url={shareUrl} text={`Japan dual pricing: ${result.headline}`} />
               </div>
             </>

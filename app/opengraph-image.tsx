@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 
+export const dynamic = "force-static";
+
 export const alt = "Japan Dual Pricing Check: do tourists pay more in Japan? Resident vs non-resident prices";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
